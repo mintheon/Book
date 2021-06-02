@@ -2,9 +2,8 @@ package com.manning.readinglist;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.io.Reader;
 import java.util.List;
 
-public interface ReadingListRepository extends JpaRepository<Book, Long> {
+public interface ReaderRepository extends JpaRepository<Reader, String> {
     List<Book> findByReader(Reader reader);
 }

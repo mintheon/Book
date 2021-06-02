@@ -6,7 +6,11 @@
     <link rel="stylesheet" th:href="@{/css/style.css}"></link>
 </head>
 <body>
-    <h2>Your Reading List</h2>
+    <form method="post" th:action="@{/logout}">
+        <input type="submit" value="Logout" />
+    </form>
+
+    <h2><span th:text="${reader.fullname}">Name</span>'s Reading List</h2>
     <div th:unless="${#lists.isEmpty(books)}">
         <dl th:each="book : ${books}">
             <dt class="bookHeadline">
