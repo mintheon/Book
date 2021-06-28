@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <style>
+      .target {
+          background-color: red;
+      }
+  </style>
+
+  <ul>
+      <th:block th:each="dto: ${list}">
+          <li th:text="${dto.sno % 5 == 0} ? ${dto.sno}: ${dto.first}"></li>
+      </th:block>
+  </ul>
+</body>
+</html>
