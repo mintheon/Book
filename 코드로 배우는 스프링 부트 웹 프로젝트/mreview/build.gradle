@@ -29,6 +29,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.11'
 }
 
 test {

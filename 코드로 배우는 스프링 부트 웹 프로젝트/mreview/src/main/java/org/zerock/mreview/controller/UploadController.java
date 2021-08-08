@@ -1,6 +1,7 @@
 package org.zerock.mreview.controller;
 
 import lombok.extern.log4j.Log4j2;
+import net.coobird.thumbnailator.Thumbnailator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,6 +65,8 @@ public class UploadController {
     @PostMapping("/uploadAjax")
     public ResponseEntity<List<UploadResultDTO>> uploadFile(MultipartFile[] uploadFiles) {
 
+        List<UploadResultDTO> resultDTOList = new ArrayList<>();
+
         for(MultipartFile uploadFile: uploadFiles) {
             //이미지 파일만 업로드 가능
             if(uploadFile.getContentType().startsWith("image") == false) {
@@ -87,7 +91,16 @@ public class UploadController {
             Path savePath = Paths.get(saveName);
 
             try {
+                // 원본 파일 저장
                 uploadFile.transferTo(savePath);
+
+                //섬네일 생성
+                String thumbnailSaveName = uploadPath + File.separator + folderPath + File.separator + "s_" + uuid + "_" + fileName;
+
+                File thumbnailFile = new File(thumbnailSaveName);
+                //섬네일 생성
+                Thumbnailator.createThumbnail(savePath.toFile(), thumbnailFile, 100, 100);
+                resultDTOList.add(new UploadResultDTO(fileName, uuid, folderPath));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -109,5 +122,26 @@ public class UploadController {
         }
 
         return folderPath;
+    }
+
+    @PostMapping("/removeFile")
+    public ResponseEntity<Boolean> removeFile(String fileName) {
+        String srcFileName = null;
+
+        try {
+            srcFileName = URLDecoder.decode(fileName, "UTF-8");
+            File file = new File(uploadPath + File.separator + srcFileName);
+
+            boolean result = file.delete();
+
+            File thumbnail = new File(file.getParent(), "s_" + file.getName());
+
+            result = thumbnail.delete();
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
